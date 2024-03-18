@@ -1,5 +1,6 @@
 package shop.mtcoding.blog.board;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,6 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BoardJPARepositoryTest {
     @Autowired
     private BoardJPARepository boardJPARepository;
+
+    @Autowired
+    private EntityManager em;
 
     @Test
     public void findById_test() {
@@ -62,6 +66,19 @@ public class BoardJPARepositoryTest {
 
         // then
         assertThat(board.getUser().getUsername()).isEqualTo("ssar");
+
+    }
+
+    @Test
+    public void deleteById_test() {
+        // given
+        int id = 1;
+
+        // when
+        boardJPARepository.deleteById(id);
+        em.flush();
+
+        // then
 
     }
 }
