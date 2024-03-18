@@ -3,11 +3,9 @@ package shop.mtcoding.blog.user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import shop.mtcoding.blog._core.errors.exception.Exception401;
 
 
 @RequiredArgsConstructor
@@ -35,13 +33,10 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(UserRequest.LoginDTO reqDTO) {
-        try {
-            User sessionUser = userRepository.findByUsernameAndPassword(reqDTO.getUsername(), reqDTO.getPassword());
-            session.setAttribute("sessionUser", sessionUser);
-            return "redirect:/";
-        } catch (EmptyResultDataAccessException e) {
-            throw new Exception401("유저네임 혹은 비밀번호가 틀렸어요");
-        }
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        userService.로그인(reqDTO);
+        session.setAttribute("sessionUser", sessionUser);
+        return "redirect:/";
     }
 
     @GetMapping("/join-form")
