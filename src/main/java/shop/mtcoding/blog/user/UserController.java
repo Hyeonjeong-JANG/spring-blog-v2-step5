@@ -19,7 +19,7 @@ public class UserController {
     @PostMapping("/user/update")
     public String update(UserRequest.UpdateDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        User newSessionUser = userRepository.updateById(sessionUser.getId(), reqDTO.getPassword(), reqDTO.getEmail());
+        User newSessionUser = userService.회원수정(sessionUser.getId(), reqDTO);
         session.setAttribute("sessionUser", newSessionUser);
         return "redirect:/";
     }
@@ -33,14 +33,14 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(UserRequest.LoginDTO reqDTO) {
-        User sessionUser = (User) session.getAttribute("sessionUser");
-        userService.로그인(reqDTO);
+        User sessionUser = userService.로그인(reqDTO);
         session.setAttribute("sessionUser", sessionUser);
         return "redirect:/";
     }
 
     @GetMapping("/join-form")
     public String joinForm() {
+
         return "user/join-form";
     }
 
@@ -52,8 +52,7 @@ public class UserController {
     @GetMapping("/user/update-form")
     public String updateForm(HttpServletRequest request) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-
-        User user = userRepository.findById(sessionUser.getId());
+        User user = userService.회원수정폼(sessionUser.getId());
         request.setAttribute("user", user);
         return "user/update-form";
     }
