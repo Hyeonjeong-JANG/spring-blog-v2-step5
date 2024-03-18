@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.mtcoding.blog._core.errors.exception.Exception400;
+import shop.mtcoding.blog._core.errors.exception.Exception401;
 
 import java.util.Optional;
 
@@ -11,6 +12,14 @@ import java.util.Optional;
 @Service // IoC 등록
 public class UserService {
     private final UserJPARepository userJPARepository;
+
+    public User 로그인(UserRequest.LoginDTO reqDTO) {
+
+        User sessionUser = userJPARepository.findByUsernameAndPassword(reqDTO.getUsername(), reqDTO.getPassword())
+                .orElseThrow(() -> new Exception401("인증되지 않았습니다.")); // orElseThrow: 값이 널이면
+
+        return sessionUser;
+    }
 
     @Transactional // 트랜잭셔널을 JPARepository가 들고 있으면 안 돼!!!
     public void 회원가입(UserRequest.JoinDTO reqDTO) {
@@ -26,3 +35,17 @@ public class UserService {
         userJPARepository.save(reqDTO.toEntity());
     }
 }
+
+/**
+ * 두 코드는 같지만 다르다.
+ * 1. 못 찾았을 때 날리기
+ * User sessionUser = userJPARepository.findByUsernameAndPassword(reqDTO.getUsername(), reqDTO.getPassword())
+ *                 .orElseThrow(() -> new Exception401("인증되지 않았습니다.")); // orElseThrow: 값이 널이면
+ *
+ * 2. 찾았을 때 날리기
+ * Optional<User> userOP = userJPARepository.findByUsername(reqDTO.getUsername());
+ *
+ *         if (userOP.isPresent()) {
+ *             throw new Exception400("중복된 유저네임입니다.");
+ *         }
+ */
