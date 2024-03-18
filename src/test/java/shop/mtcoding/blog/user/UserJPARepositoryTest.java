@@ -59,7 +59,7 @@ public class UserJPARepositoryTest {
         String password = "1234";
 
         // when
-        User user = userJPARepository.findByUsernameAndPassword(username, password);
+       Optional<User> user = userJPARepository.findByUsernameAndPassword(username, password);
 
         // then
         System.out.println("findByUsernameAndPassword_test: " + user);
