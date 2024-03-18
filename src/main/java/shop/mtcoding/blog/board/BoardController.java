@@ -19,12 +19,13 @@ import java.util.List;
 public class BoardController {
 
     private final BoardRepository boardRepository;
+    private BoardService boardService;
     private final HttpSession session;
 
     @PostMapping("/board/save")
     public String save(BoardRequest.SaveDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        boardRepository.save(reqDTO.toEntity(sessionUser));
+        boardService.글쓰기(reqDTO, sessionUser);
         return "redirect:/";
     }
 
@@ -33,7 +34,7 @@ public class BoardController {
         User sessionUser = (User) session.getAttribute("sessionUser");
         Board board = boardRepository.findById(id);
 
-        if(sessionUser.getId() != board.getUser().getId()){
+        if (sessionUser.getId() != board.getUser().getId()) {
             throw new Exception403("게시글을 수정할 권한이 없습니다");
         }
 
@@ -54,7 +55,7 @@ public class BoardController {
         User sessionUser = (User) session.getAttribute("sessionUser");
         Board board = boardRepository.findById(id);
 
-        if(sessionUser.getId() != board.getUser().getId()){
+        if (sessionUser.getId() != board.getUser().getId()) {
             throw new Exception403("게시글을 삭제할 권한이 없습니다");
         }
 
@@ -81,8 +82,8 @@ public class BoardController {
 
         // 로그인을 하고, 게시글의 주인이면 isOwner가 true가 된다.
         boolean isOwner = false;
-        if(sessionUser != null){
-            if(sessionUser.getId() == board.getUser().getId()){
+        if (sessionUser != null) {
+            if (sessionUser.getId() == board.getUser().getId()) {
                 isOwner = true;
             }
         }

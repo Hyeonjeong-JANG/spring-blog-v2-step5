@@ -41,7 +41,7 @@ public class UserService {
     public void 회원가입(UserRequest.JoinDTO reqDTO) {
         // 1. 유효성 검사(컨트롤러 책임)
 
-        // 2. 유저네임 중복검사(서비스기 체크) DM연결이 필요해서 서비스가 해아함
+        // 2. 유저네임 중복검사(서비스가 체크) DM연결이 필요해서 서비스가 해아함
         Optional<User> userOP = userJPARepository.findByUsername(reqDTO.getUsername());
 
         if (userOP.isPresent()) {
