@@ -20,14 +20,6 @@ public class UserController {
     private final UserRepository userRepository;
     private final HttpSession session;
 
-    @PostMapping("/user/update")
-    public String update(UserRequest.UpdateDTO reqDTO) {
-        User sessionUser = (User) session.getAttribute("sessionUser");
-        User newSessionUser = userRepository.updateById(sessionUser.getId(), reqDTO.getPassword(), reqDTO.getEmail());
-        session.setAttribute("sessionUser", newSessionUser);
-        return "redirect:/";
-    }
-
     @PostMapping("/join")
     public String join(UserRequest.JoinDTO reqDTO) {
 //        try {
@@ -49,6 +41,7 @@ public class UserController {
 //        } catch (EmptyResultDataAccessException e) {
 //            throw new Exception401("유저네임 혹은 비밀번호가 틀렸어요");
 //        }
+        // 위 로직을 아래와 같이 변경함
         User sessionUser = userService.로그인(reqDTO);
         session.setAttribute("sessionUser", sessionUser);
         return "redirect:/";
@@ -68,9 +61,17 @@ public class UserController {
     public String updateForm(HttpServletRequest request) {
         User sessionUser = (User) session.getAttribute("sessionUser");
 
-        User user = userRepository.findById(sessionUser.getId());
+        User user = userService.회원수정폼(sessionUser.getId()); // 이건 사실 폼을 이렇게 불러올 필요가 없지만 일관성을 맞춰주기 위해 이렇게 했다.
         request.setAttribute("user", user);
         return "user/update-form";
+    }
+
+    @PostMapping("/user/update")
+    public String update(UserRequest.UpdateDTO reqDTO) {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        User newSessionUser = userService.회원수정(sessionUser.getId(), reqDTO);
+        session.setAttribute("sessionUser", newSessionUser);
+        return "redirect:/";
     }
 
     @GetMapping("/logout")
