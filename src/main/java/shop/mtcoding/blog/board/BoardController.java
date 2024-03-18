@@ -38,8 +38,8 @@ public class BoardController {
 
     @GetMapping("/board/{id}/update-form")
     public String updateForm(@PathVariable Integer id, HttpServletRequest request) {
-        Board board = boardRepository.findById(id);
-
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        Board board = boardService.게시글수정폼(id, sessionUser.getId());
         request.setAttribute("board", board);
         return "board/update-form";
     }

@@ -12,6 +12,16 @@ import shop.mtcoding.blog.user.User;
 public class BoardService {
     private final BoardJPARepository boardJPARepository;
 
+    public Board 게시글수정폼(int BoardId, int sessionUserId) {
+        Board board = boardJPARepository.findById(BoardId)
+                .orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다."));
+
+        if (sessionUserId != board.getUser().getId()) {
+            throw new Exception403("게시글을 수정할 권한이 없습니다");
+        }
+        return board;
+    }
+
     @Transactional
     public void 글수정(int BoardId, int sessionUserId, BoardRequest.UpdateDTO reqDTO) {
         // 1. 조회 및 예외처리
