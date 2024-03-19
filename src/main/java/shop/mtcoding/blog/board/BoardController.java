@@ -24,7 +24,7 @@ public class BoardController {
 
     @GetMapping("/")
     public String index(HttpServletRequest request) {
-        List<Board> boardList = boardRepository.findAll();
+        List<Board> boardList = boardService.글목록조회();
         request.setAttribute("boardList", boardList);
         return "index";
     }
@@ -32,17 +32,8 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detail(@PathVariable Integer id, HttpServletRequest request) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        Board board = boardRepository.findByIdJoinUser(id);
+        Board board = boardService.글상세보기(id, sessionUser);
 
-        // 로그인을 하고, 게시글의 주인이면 isOwner가 true가 된다.
-        boolean isOwner = false;
-        if (sessionUser != null) {
-            if (sessionUser.getId() == board.getUser().getId()) {
-                isOwner = true;
-            }
-        }
-
-        request.setAttribute("isOwner", isOwner);
         request.setAttribute("board", board);
         return "board/detail";
     }
@@ -55,7 +46,7 @@ public class BoardController {
     @PostMapping("/board/save")
     public String save(BoardRequest.SaveDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        boardRepository.save(reqDTO.toEntity(sessionUser));
+       boardService.글쓰기(reqDTO, sessionUser);
         return "redirect:/";
     }
 
