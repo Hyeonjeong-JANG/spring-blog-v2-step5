@@ -18,6 +18,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final HttpSession session;
+    private final UserService userService;
 
     @PostMapping("/user/update")
     public String update(UserRequest.UpdateDTO reqDTO) {
@@ -44,7 +45,7 @@ public class UserController {
             User sessionUser = userRepository.findByUsernameAndPassword(reqDTO.getUsername(), reqDTO.getPassword());
             session.setAttribute("sessionUser", sessionUser);
             return "redirect:/";
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new Exception401("유저네임 혹은 비밀번호가 틀렸어요");
         }
     }
