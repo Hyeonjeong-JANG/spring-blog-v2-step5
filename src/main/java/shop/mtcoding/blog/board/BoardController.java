@@ -46,14 +46,13 @@ public class BoardController {
     @PostMapping("/board/save")
     public String save(BoardRequest.SaveDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-       boardService.글쓰기(reqDTO, sessionUser);
+        boardService.글쓰기(reqDTO, sessionUser);
         return "redirect:/";
     }
 
     @GetMapping("/board/{id}/update-form")
     public String updateForm(@PathVariable Integer id, HttpServletRequest request) {
-        Board board = boardRepository.findById(id);
-
+        Board board = boardService.글조회(id);
         request.setAttribute("board", board);
         return "board/update-form";
     }
@@ -61,24 +60,15 @@ public class BoardController {
     @PostMapping("/board/{id}/update")
     public String update(@PathVariable Integer id, BoardRequest.UpdateDTO reqDTO) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        Board board = boardRepository.findById(id);
+        boardService.글수정(id, sessionUser.getId(), reqDTO);
 
-        if (sessionUser.getId() != board.getUser().getId()) {
-            throw new Exception403("게시글을 수정할 권한이 없습니다");
-        }
-
-        boardRepository.updateById(id, reqDTO.getTitle(), reqDTO.getContent());
         return "redirect:/board/" + id;
     }
 
     @PostMapping("/board/{id}/delete")
     public String delete(@PathVariable Integer id) {
         User sessionUser = (User) session.getAttribute("sessionUser");
-        Board board = boardRepository.findById(id);
-
-        if (sessionUser.getId() != board.getUser().getId()) {
-            throw new Exception403("게시글을 삭제할 권한이 없습니다");
-        }
+        boardService.글삭제(id, sessionUser.getId());
 
         boardRepository.deleteById(id);
         return "redirect:/";
